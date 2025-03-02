@@ -1,25 +1,25 @@
 const mongoose = require("mongoose");
 
-const uplodeSchema = new mongoose.Schema({
-  filename: {
+const uploadSchema = new mongoose.Schema({
+  type: {
     type: String,
+    enum: ["File", "Massage"], // "Message" is not included
     required: true,
   },
-  details: {
-    type: String,
-    required: true,
+  massage: { type: String },
+  details: { type: String, required: true },
+  options: { 
+    type: String, 
+    required: true, 
+    enum: ["official", "exam", "vacation", "other"] 
   },
-  options: {
-    type: String,
-    required: true,
-    enum: ["official", "exam", "vacation", "other"], // Validates specific values
-  },
-  name: String,
-  path: String,
-  size: Number,
-  mimetype: String,
+  name: { type: String},  // Ensure file name is always stored
+  path: { type: String },  // Store full path
+  size: { type: Number },  // Ensure file size is stored
+  mimetype: { type: String}, // Ensure MIME type is recorded
 });
 
-const uplodeData = new mongoose.model("uploded-data", uplodeSchema);
+const UploadData = mongoose.model("uploaded-data", uploadSchema);
 
-module.exports = uplodeData;
+
+module.exports = UploadData;
