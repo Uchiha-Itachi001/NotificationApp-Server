@@ -6,7 +6,8 @@ const StudentSchema = new mongoose.Schema({
     regno: String,
     rollno: String,
     email: String,
-    mobile: String
+    mobile: String,
+    department: String,
 });
 
 StudentSchema.methods.generateAuthToken = function () {
