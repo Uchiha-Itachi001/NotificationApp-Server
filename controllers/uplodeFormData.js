@@ -4,7 +4,7 @@ const fs = require("fs");
 const uplode_form_data = async (req, res) => {
   try {
     const { type, massage, details, options } = req.body;
-
+    console.log("req.body", req.body);
     // Validation for required fields based on type
     if (!type || !details || !options) {
       return res.status(400).json({ message: "All fields are required" });
@@ -25,7 +25,7 @@ const uplode_form_data = async (req, res) => {
       massage: type === "Massage" ? massage : undefined,
       details,
       options,
-      ...fileData
+      ...fileData,
     });
 
     await uplode.save();
@@ -37,10 +37,11 @@ const uplode_form_data = async (req, res) => {
 };
 const show_data = async (req, res) => {
   try {
+    console.log("hello");
     const files = await uplodeData.find();
     res.status(200).json(files);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching files', error });
+    res.status(500).json({ message: "Error fetching files", error });
   }
 };
 
@@ -52,17 +53,15 @@ const delete_data = async (req, res) => {
     if (!file) {
       return res.status(404).json({ msg: "Data not found" });
     }
-    if(file.type === "File"){
-
-      
+    if (file.type === "File") {
       // Remove the file from the filesystem
-    fs.unlink(file.path, (err) => {
-      if (err) {
-        console.error("Error deleting file:", err);
-      }
-    });
-  }
-  await uplodeData.findByIdAndDelete(id);
+      fs.unlink(file.path, (err) => {
+        if (err) {
+          console.error("Error deleting file:", err);
+        }
+      });
+    }
+    await uplodeData.findByIdAndDelete(id);
 
     res.status(200).json({ msg: "Data deleted" });
   } catch (error) {

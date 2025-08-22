@@ -2,6 +2,7 @@ const path = require("path");
 const xlsx = require("xlsx");
 const fs = require("fs");
 const StudentModel = require("../models/StudentModel");
+const UploadData = require("../models/uplode_models");
 
 const add = async (req, res) => {
   try {
@@ -32,7 +33,7 @@ const deleteitem = async (req, res) => {
   try {
     const { id } = req.body;
     await StudentModel.findByIdAndDelete(id);
-    res.status(200).json({ message: "Student record deleted successfully"});
+    res.status(200).json({ message: "Student record deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -47,4 +48,48 @@ const deleteAll = async (req, res) => {
   }
 };
 
-module.exports = { add, List, deleteAll, deleteitem };
+const addId = async (req, res) => {
+  try {
+    const { userid, notificationId } = req.body;
+
+    const user = await StudentModel.findById(userid);
+    const notification = await UploadData.findById(notificationId);
+    console.log(`user : ${user} \n notification : ${notificationId}`);
+    
+    if (!user || !notification) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    // Ensure array exists (for old docs without field)
+    if (!user.notifications) {
+      user.notifications = [];
+    }
+    // Avoid duplicates (optional)
+    if (!user.notifications.includes(notificationId)) {
+      user.notifications.push(notificationId);
+    }
+    console.log("Product id added ", notificationId);
+    console.log("user data", user);
+    await user.save();
+
+    res.status(200).send("Product ID added successfully");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server error", error);
+  }
+};
+
+const UserID = async (req, res) => {
+  try {
+    const { id } = req.body;
+    const user = await StudentModel.findById(id);
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+    console.log("User find by Id successfull");
+
+    res.status(200).json({ data: user});
+  } catch (error) {
+    res.status(500).send("Error");
+  }
+};
+module.exports = { add, List, deleteAll, deleteitem ,addId,UserID};

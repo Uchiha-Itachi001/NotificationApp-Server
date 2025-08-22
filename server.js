@@ -12,7 +12,7 @@ const authRouter = require("./routers/authRouts");
 const authMiddleware = require("./middleware/authMiddleware");
 const { UserData } = require("./controllers/authControllers");
 const app = express();
-
+ 
 app.use("/uploads", express.static("uploads"));
 
 //@middlewares
@@ -30,6 +30,9 @@ app.use("/api/auth", router);
 app.use("/api/authentication", authRouter);
 app.use("/api/students", Studentrouter);
 
+app.get("/",(req,res)=>{
+    res.send("HEllo")
+})
 connectDB().then(() => {
   const port = 5000;
   app.listen(port, () => {
