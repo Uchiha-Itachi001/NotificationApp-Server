@@ -2,7 +2,11 @@ const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 
 const StudentSchema = new mongoose.Schema({
-  name: String,
+  name: {
+    type: String,
+    set: (v) => v.toUpperCase(), // always store in uppercase
+    required: true,
+  },
   regno: String,
   rollno: String,
   email: String,
