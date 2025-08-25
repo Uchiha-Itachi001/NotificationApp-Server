@@ -1,41 +1,38 @@
 require("dotenv").config();
-//!modules
-
 const express = require("express");
 const connectDB = require("./config/db");
 const cors = require("cors");
-const router = require("./routers/uplode");
 const path = require("path");
 const fs = require("fs");
+
+const uploadRouter = require("./routers/uplode");
 const Studentrouter = require("./routers/StudentRouterds");
 const authRouter = require("./routers/authRouts");
-const authMiddleware = require("./middleware/authMiddleware");
-const { UserData } = require("./controllers/authControllers");
-const app = express();
- 
-app.use("/uploads", express.static("uploads"));
 
-//@middlewares
+const app = express();
+
+// Middlewares
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const uploaddir = path.join(__dirname, "uploads");
-if (!fs.existsSync(uploaddir)) {
-  fs.mkdirSync(uploaddir);
-}
+// Static uploads folder
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-//@Routers
-app.use("/api/auth", router);
+// Routers
+app.use("/api/auth", uploadRouter);
 app.use("/api/authentication", authRouter);
 app.use("/api/students", Studentrouter);
 
-app.get("/",(req,res)=>{
-    res.send("HEllo")
-})
+// Test route
+app.get("/", (req, res) => {
+  res.send("Hello 👋 Server running...");
+});
+
+// DB + Start
 connectDB().then(() => {
-  const port = 5000;
+  const port = process.env.PORT || 5000;
   app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+    console.log(`✅ Server is running on port ${port}`);
   });
 });

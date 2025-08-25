@@ -4,8 +4,8 @@ const multer = require("multer");
 const { add, List, deleteAll, deleteitem, addId, UserID } = require("../controllers/StudentControllers");
 
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {  // <-- Use 'cb' instead of 'cd'
-        cb(null, 'uploads/');  // Correct callback function
+    destination: (req, file, cb) => {  // <-- Corrected 'cb'
+        cb(null, 'uploads/');  // save files inside uploads folder
     },
     filename: (req, file, cb) => {
         const uniqSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9);
@@ -15,10 +15,12 @@ const storage = multer.diskStorage({
 
 const uploads = multer({ storage: storage });
 
-Studentrouter.post("/upload", uploads.single("file"), add);
-Studentrouter.get("/data", List);
-Studentrouter.post("/delete", deleteitem); // New delete route
-Studentrouter.delete("/delete-all", deleteAll); // New delete route
-Studentrouter.post("/notify", addId); // New delete route
-Studentrouter.post("/user", UserID); // New delete route
+// 🔹 Routes
+Studentrouter.post("/upload", uploads.single("file"), add);  // upload excel file
+Studentrouter.get("/data", List);                            // get all students
+Studentrouter.post("/delete", deleteitem);                   // delete by ID
+Studentrouter.delete("/delete-all", deleteAll);              // delete all students
+Studentrouter.post("/notify", addId);                        // add notification ID to user
+Studentrouter.post("/user", UserID);                         // get user by ID
+
 module.exports = Studentrouter;
