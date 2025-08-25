@@ -37,7 +37,7 @@ const uplode_form_data = async (req, res) => {
 };
 const show_data = async (req, res) => {
   try {
-    console.log("hello");
+    // console.log("hello");
     const files = await uplodeData.find();
     res.status(200).json(files);
   } catch (error) {

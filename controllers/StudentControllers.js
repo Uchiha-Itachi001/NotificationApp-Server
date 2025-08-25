@@ -12,9 +12,29 @@ const add = async (req, res) => {
     const sheet = workbook.Sheets[sheet_name_list];
     const jsondata = xlsx.utils.sheet_to_json(sheet);
 
-    await StudentModel.insertMany(jsondata);
+    // Let's assume each student has a unique "rollNumber"
+    const insertedData = [];
+    for (let student of jsondata) {
+      if (!student.rollNumber) continue; // skip invalid rows
+
+      const exists = await StudentModel.findOne({
+        rollNumber: student.rollNumber,
+      });
+
+      if (!exists) {
+        const newStudent = new StudentModel(student);
+        await newStudent.save();
+        insertedData.push(newStudent);
+      }
+    }
+
     fs.unlinkSync(filepath);
-    res.json({ message: "File uploaded successfully" });
+
+    res.json({
+      message: "File processed successfully",
+      inserted: insertedData.length,
+      skipped: jsondata.length - insertedData.length,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -55,7 +75,7 @@ const addId = async (req, res) => {
     const user = await StudentModel.findById(userid);
     const notification = await UploadData.findById(notificationId);
     console.log(`user : ${user} \n notification : ${notificationId}`);
-    
+
     if (!user || !notification) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -87,9 +107,9 @@ const UserID = async (req, res) => {
     }
     console.log("User find by Id successfull");
 
-    res.status(200).json({ data: user});
+    res.status(200).json({ data: user });
   } catch (error) {
     res.status(500).send("Error");
   }
 };
-module.exports = { add, List, deleteAll, deleteitem ,addId,UserID};
+module.exports = { add, List, deleteAll, deleteitem, addId, UserID };
