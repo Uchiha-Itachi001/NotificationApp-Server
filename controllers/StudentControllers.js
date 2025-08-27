@@ -92,4 +92,24 @@ const UserID = async (req, res) => {
     res.status(500).send("Error");
   }
 };
-module.exports = { add, List, deleteAll, deleteitem ,addId,UserID};
+
+const deleteMany = async (req, res) => {
+  try {
+    const { ids } = req.body; // expecting { ids: ["id1", "id2", ...] }
+
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ message: "Please provide an array of IDs" });
+    }
+
+    const result = await Student.deleteMany({ _id: { $in: ids } });
+
+    return res.status(200).json({
+      message: `${result.deletedCount} students deleted successfully`,
+    });
+  } catch (error) {
+    console.error("Error deleting students:", error);
+    return res.status(500).json({ message: "Server error", error });
+  }
+};
+
+module.exports = { add, List, deleteAll, deleteitem,deleteMany ,addId,UserID};
