@@ -101,7 +101,7 @@ const deleteMany = async (req, res) => {
       return res.status(400).json({ message: "Please provide an array of IDs" });
     }
 
-    const result = await Student.deleteMany({ _id: { $in: ids } });
+    const result = await StudentModel.deleteMany({ _id: { $in: ids } });
 
     return res.status(200).json({
       message: `${result.deletedCount} students deleted successfully`,
